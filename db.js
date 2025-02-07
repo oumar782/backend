@@ -1,10 +1,10 @@
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,  // Utilisation de la variable d'environnement
-  user: process.env.DB_USER,  // Utilisateur de la base de données (doit aussi être dans les variables d'environnement)
-  password: process.env.DB_PASSWORD,  // Mot de passe de la base de données
-  database: process.env.DB_NAME   // Nom de la base de données
+  host: process.env. 196.115.41.79,  // Utilisation de la variable d'environnement
+  user: process.env.root,  // Utilisateur de la base de données (doit aussi être dans les variables d'environnement)
+  password: process.env.root,  // Mot de passe de la base de données
+  database: process.env.FootSpaceReserve   // Nom de la base de données
 });
 
 db.connect((err) => {
