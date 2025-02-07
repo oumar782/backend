@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    #content {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      text-align: left;
+      color: #555;
+    }
+
+    input, select {
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #6a11cb;
+      box-shadow: 0 0 8px rgba(106, 17, 203, 0.2);
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2575fc;
+    }
+
+    .feedback-box {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      width: 300px;
+      z-index: 1000;
+    }
+
+    .feedback-box.success {
+      border: 2px solid #28a745;
+      color: #155724;
+    }
+
+    .feedback-box.error {
+      border: 2px solid #dc3545;
+      color: #721c24;
+    }
+
+    .feedback-box button {
+      margin-top: 15px;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .feedback-box button:hover {
+      background-color: #2575fc;
+    }
+
+    .blurred {
+      filter: blur(3px);
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <h1>Merci de vous identifier pour votre authenticité</h1>
+
+    <form id="loginForm">
+      <label for="nom">Nom:</label>
+      <input type="text" id="nom" name="nom" required>
+    
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    
+      <label for="mdp">Mot de passe:</label>
+      <input type="password" id="mdp" name="mdp" required>
+    
+      <label for="typeuser">Type d'utilisateur:</label>
+      <select id="typeuser" name="typeuser" required>
+        <option value="Administrateur">Administrateur</option>
+        <option value="Gestionnaire">Gestionnaire</option>
+      </select>
+    
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+
+  <!-- Boîte de feedback -->
+  <div id="feedbackBox" class="feedback-box">
+    <p id="feedbackMessage"></p>
+    <button id="closeFeedback">OK</button>
+  </div>
+
+  <script>
+    document.querySelector('#loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const nom = document.querySelector('#nom').value;
+      const email = document.querySelector('#email').value;
+      const mdp = document.querySelector('#mdp').value;
+      const typeuser = document.querySelector('#typeuser').value;
+      const feedbackBox = document.querySelector('#feedbackBox');
+      const feedbackMessage = document.querySelector('#feedbackMessage');
+      const content = document.querySelector('#content');
+
+      try {
+        const response = await fetch('http://localhost:8000/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, email, mdp, typeuser }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          feedbackMessage.innerHTML = `✅ Bienvenue, <strong>${nom}</strong> !<br>Connexion réussie.`;
+          feedbackBox.className = 'feedback-box success';
+
+          // Afficher la boîte de feedback et flouter le fond
+          feedbackBox.style.display = 'block';
+          content.classList.add('blurred');
+
+          // Attendre 3 secondes puis rediriger
+          setTimeout(() => {
+            if (typeuser === 'Administrateur') {
+              window.location.href = 'administrateur.html';
+            } else {
+              window.location.href = 'gestionnaire.html';
+            }
+          }, 3000);
+
+        } else {
+          feedbackMessage.innerHTML = `❌ ${data.message}`;
+          feedbackBox.className = 'feedback-box error';
+          feedbackBox.style.display = 'block';
+          content.classList.add('blurred');
+        }
+
+      } catch (err) {
+        feedbackMessage.innerHTML = '❌ Une erreur est survenue.';
+        feedbackBox.className = 'feedback-box error';
+        feedbackBox.style.display = 'block';
+        content.classList.add('blurred');
+      }
+    });
+
+    // Fermer le message de feedback immédiatement
+    document.querySelector('#closeFeedback').addEventListener('click', function () {
+      document.querySelector('#feedbackBox').style.display = 'none';
+      document.querySelector('#content').classList.remove('blurred');
+    });
+  </script>
+</body>
+</html>
