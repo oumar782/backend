@@ -101,7 +101,7 @@
         // Fonction pour charger les créneaux depuis l'API
         async function loadCreneaux() {
             try {
-                const response = await fetch('http://localhost:8000/creneaux');
+                const response = await fetch('http://3306:8000/creneaux');
                 if (!response.ok) {
                     throw new Error('Erreur réseau');
                 }
@@ -145,7 +145,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:8000/ajoutcreneaux', {
+                const response = await fetch('http://3306:8000/ajoutcreneaux', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
