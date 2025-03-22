@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db.js');  // Assure-toi que le chemin vers db.js est correct
+const db = require('../db.js'); // Assure-toi que la connexion DB est correcte
 
-// Route pour gérer la soumission du formulaire de connexion
+// Route pour le login
 router.post('/login', (req, res) => {
   const { nom, email, mdp, typeuser } = req.body;
 
-  // Requête SQL pour récupérer l'utilisateur en fonction des données soumises
+  // Requête SQL corrigée
   const sql = 'SELECT * FROM utilisateurs WHERE nom = $1 AND email = $2 AND mdp = $3 AND typeuser = $4';
 
-  // Utilisation de db.query pour exécuter la requête SQL
+  // Exécution de la requête avec db.query
   db.query(sql, [nom, email, mdp, typeuser])
-    .then((result) => {
+    .then(result => {
       if (result.rows.length > 0) {
         const utilisateur = result.rows[0];
         const utilisateurRole = utilisateur.typeuser;
@@ -38,9 +38,9 @@ router.post('/login', (req, res) => {
         return res.status(401).json({ message: 'Nom ou mot de passe incorrect, veuillez réessayer' });
       }
     })
-    .catch((err) => {
-      console.error('Error executing query', err.message);
-      return res.status(500).json({ message: 'Internal server error' });
+    .catch(err => {
+      console.error('Erreur SQL:', err.message);
+      return res.status(500).json({ message: 'Une erreur interne est survenue.' });
     });
 });
 

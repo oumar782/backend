@@ -15,10 +15,112 @@
       width: 30px;
       height: 30px;
       animation: spin 2s linear infinite;
+      margin: 20px auto;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+
+    /* Styles pour la boîte de feedback */
+    .feedback-box {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      z-index: 1000;
+      max-width: 90%;
+      width: 400px;
+    }
+
+    .feedback-box.success {
+      border: 2px solid #4CAF50;
+    }
+
+    .feedback-box.error {
+      border: 2px solid #f44336;
+    }
+
+    .feedback-box p {
+      font-size: 16px;
+      margin: 0 0 20px;
+      color: #333;
+    }
+
+    .feedback-box button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .feedback-box button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Styles pour le flou du fond */
+    .blurred {
+      filter: blur(5px);
+      transition: filter 0.3s ease;
+    }
+
+    /* Styles pour le formulaire */
+    #content {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2980b9;
     }
   </style>
 </head>
