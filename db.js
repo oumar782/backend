@@ -1,22 +1,22 @@
-require('dotenv').config();  // Assurez-vous d'inclure cette ligne au début pour charger les variables d'environnement
+require('dotenv').config();  // Charge les variables d'environnement depuis le fichier .env
 
 const { Pool } = require('pg');
 
-const db = new Pool({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PWD,
-  database: process.env.DBNAME,
-  port: 5432, // Assurez-vous d'ajuster le port si nécessaire
+// Utilisez DATABASE_URL dans votre configuration de Pool pour se connecter à PostgreSQL
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,  // Connexion via l'URL de Neon
+  ssl: {
+    rejectUnauthorized: false, // Requis pour la connexion sécurisée à Neon
+  },
 });
 
-db.connect((err, client, release) => {
+pool.connect((err, client, release) => {
   if (err) {
     console.error('Erreur de connexion à PostgreSQL:', err.message);
     return;
   }
   console.log('Connexion réussie à PostgreSQL ✅');
-  release();
+  release(); // Libère la connexion après l'utilisation
 });
 
-module.exports = db;
+module.exports = pool;  // Exporter l'instance de la connexion Pool

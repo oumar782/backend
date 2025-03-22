@@ -6,6 +6,15 @@ const cors = require('cors');
 const authRoutes = require('./composant/authentification.js');
 const creneauxRoutes = require('./composant/crenaux.js');
 const { Pool } = require('pg');  // Importer Pool de pg pour gérer la connexion PostgreSQL
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+});
+
+client.connect()
+  .then(() => console.log('Database connected successfully'))
+  .catch(err => console.error('Connection error', err.stack));
 
 const app = express();
 const port = 8000;
