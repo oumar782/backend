@@ -5,24 +5,27 @@ const router = express.Router();
 
 // 📌 Route pour récupérer les créneaux disponibles
 router.get('/creneaux', (req, res) => {
-  const { date, terrainType } = req.query;
+  let { date, terrainType, surface } = req.query;
 
-  // Vérification des paramètres de requête
-  if (!date || !terrainType) {
-    return res.status(400).json({ message: 'Date et type de terrain requis.' });
+  // Vérification des paramètres requis
+  if (!date || !terrainType || !surface) {
+    return res.status(400).json({ message: 'Date, type de terrain et surface sont requises.' });
   }
 
-  // Validation du format de la date et du type de terrain
-  const validDate = /^\d{4}-\d{2}-\d{2}$/.test(date); // Exemple de validation de date au format YYYY-MM-DD
-  const validTerrainType = typeof terrainType === 'string' && terrainType.trim() !== '';
+  // Validation des formats
+  const validDate = /^\d{4}-\d{2}-\d{2}$/.test(date);
+  terrainType = terrainType.trim().toLowerCase();
+  const validTerrainType = ['normal', 'synthetique'].includes(terrainType);
+  const validSurface = ['7X7', '9X9', '11X11'].includes(surface);
 
-  if (!validDate || !validTerrainType) {
-    return res.status(400).json({ message: 'Format de date ou type de terrain invalide.' });
+  if (!validDate || !validTerrainType || !validSurface) {
+    return res.status(400).json({ message: 'Format invalide pour la date, le type de terrain ou la surface.' });
   }
 
-  const sql = `SELECT * FROM creneaux WHERE typeTerrain = ? AND dateCreneaux = ?`;
+  // Requête SQL sécurisée
+  const sql = `SELECT * FROM creneaux WHERE typeTerrain = ? AND datecreneaux = ? AND SurfaceTerrains = ?`;
 
-  db.query(sql, [terrainType, date], (err, results) => {
+  db.query(sql, [terrainType, date, surface], (err, results) => {
     if (err) {
       console.error('❌ Erreur SQL:', err);
       return res.status(500).json({ message: 'Erreur serveur' });

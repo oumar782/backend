@@ -474,7 +474,7 @@ td {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-            max-width: 800px; /* Ajusté pour plus d'espace */
+            max-width: 1200px; /* Ajusté pour plus d'espace */
             margin: 20px auto;
         }
 
@@ -667,52 +667,69 @@ td {
         </div>
         <div class="containerss">
             <h1>Ajouter une Réservation</h1>
-            
-            <!-- Formulaire d'ajout de réservation -->
             <div class="form-container">
                 <h2>Nouvelle Réservation</h2>
-                <form>
-                    <!-- Première ligne : Terrain et Client -->
+                <form id="reservationForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="terrain">Terrain</label>
+                            <label for="date">Date reservation</label>
+                            <input type="date" id="date" name="date" placeholder="la date de reservation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="heureDebut">heure debut</label>
+                            <input type="time" id="heureDebut" name="heureDebut" placeholder="Heure debut" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="heureFin">Heure Fin</label>
+                            <input type="time" id="heureFin" name="heureFin" placeholder="heure fin" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nom">Nom</label>
+                            <input type="text" id="nom" name="nom" placeholder="Nom du client" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prenom">Prenom</label>
+                            <input type="text" id="prenom" name="prenom" placeholder="Prenom du client" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="email du client" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telephone">Telephone</label>
+                            <input type="number" id="telephone" name="telephone" placeholder="numero du client" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="terrain">Type de terrain</label>
                             <select id="terrain" name="terrain" required>
-                                <option value="Terrain A">Terrain A</option>
-                                <option value="Terrain B">Terrain B</option>
-                                <option value="Terrain C">Terrain C</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="client">Client</label>
-                            <input type="text" id="client" name="client" placeholder="Nom du client" required>
-                        </div>
-                    </div>
-
-                    <!-- Deuxième ligne : Date et Heure -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="date">Date</label>
-                            <input type="date" id="date" name="date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="heure">Heure</label>
-                            <input type="time" id="heure" name="heure" required>
-                        </div>
-                    </div>
-
-                    <!-- Troisième ligne : Statut -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="statut">Statut</label>
-                            <select id="statut" name="statut" required>
-                                <option value="Confirmé">Confirmé</option>
-                                <option value="En attente">En attente</option>
-                                <option value="Annulé">Annulé</option>
+                                <option value="normal">Normal</option>
+                                <option value="synthetique">Synthetique</option>
                             </select>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tarif">Tarif</label>
+                            <input type="number" step="0.01" id="tarif" name="tarif" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="surface">Surface du terrain</label>
+                            <select id="surface" name="surface" required>
+                                <option value="7X7">7X7</option>
+                                <option value="9X9">9X9</option>
+                                <option value="11X11">11X11</option>
+                            </select>
+                        </div>
+                    </div>
+                   <div class="form-group">
+                   <label for="statut">Statut</label>
+                   <select id="statut" name="statut" required>
+                   <option value="Confirmé">Confirmé</option>
+                   <option value="En attente">En attente</option>
+                  <option value="Annulé">Annulé</option>
+    </select>
+</div>
 
-                    <!-- Actions du formulaire -->
                     <div class="form-actions">
                         <button type="button" onclick="window.location.href='reservation.html'">Annuler</button>
                         <button type="submit">Ajouter</button>
@@ -720,5 +737,72 @@ td {
                 </form>
             </div>
         </div>
+    </div>
+</div>
+<div id="messageBox" class="message-box">
+    <span id="messageIcon" class="message-icon"></span>
+    <span id="messageText" class="message-text"></span>
+    <button id="closeMessageBox" class="close-button">Fermer</button>
+</div>
+<script>
+    async function ajouterReservation(data) {
+        try {
+            const response = await fetch('http://localhost:8000/reservations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la requête : ' + response.status);
+            }
+
+            // Afficher la boîte de dialogue de succès
+            showMessageBox('Réservation ajoutée avec succès', 'success');
+        } catch (error) {
+            console.error('Erreur lors de l’ajout de la réservation:', error);
+            // Afficher la boîte de dialogue d'erreur
+            showMessageBox('Une erreur est survenue lors de l\'ajout de la réservation.', 'error');
+        }
+    }
+
+    function showMessageBox(message, type) {
+        const messageBox = document.getElementById('messageBox');
+        const messageIcon = document.getElementById('messageIcon');
+        const messageText = document.getElementById('messageText');
+
+        messageText.textContent = message;
+
+        if (type === 'success') {
+            messageIcon.textContent = '✅'; // Emoji de succès
+            messageBox.style.backgroundColor = '#e6f4ea'; // Couleur de fond pour succès
+        } else {
+            messageIcon.textContent = '❌'; // Emoji d'erreur
+            messageBox.style.backgroundColor = '#ffebee'; // Couleur de fond pour erreur
+        }
+
+        messageBox.style.display = 'block';
+
+        // Fermer la boîte de dialogue lorsque l'utilisateur clique sur le bouton
+        document.getElementById('closeMessageBox').onclick = function() {
+            messageBox.style.display = 'none';
+            if (type === 'success') {
+                window.location.href = 'reservation.html'; // Redirection après succès
+            }
+        };
+    }
+
+    // Gestion du formulaire
+    document.getElementById('reservationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        ajouterReservation(data);
+    });
+</script>
 </body>
 </html>

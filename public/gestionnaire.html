@@ -6,6 +6,18 @@
     <title>Gestion des Créneaux</title>
     <link rel="stylesheet" href="style/gestionnaire.css">
 </head>
+<style>
+    body {
+        background: linear-gradient(390deg, rgba(6, 79, 30, 0.8), rgba(22, 89, 42, 0.3)), 
+                url('./images/arriereP.avif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        box-shadow: 0px 44px 110px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        padding: 190px 50px;
+    }
+</style>
 <body>
     <header class="header-container">
         <div class="header">
@@ -24,20 +36,56 @@
                 Gestionnaire de <span></span>
             </h2>
         </div>
+        <nav class="tabs" aria-label="Navigation Tabs">
+            <a href="gestionnaire.html" class="tab active" aria-current="page">Créneaux</a>
+            <a href="reservation.html" class="tab">Réservations</a>
+            <a href="paiements.html" class="tab">Paiements</a>
+            <a href="calendrier.html" class="tab">Disponibilité</a>
+        </nav>
         <div class="container">
-            <nav class="tabs" aria-label="Navigation Tabs">
-                <a href="gestionnaire.html" class="tab active" aria-current="page">Créneaux</a>
-                <a href="reservation.html" class="tab">Réservations</a>
-                <a href="paiements.html" class="tab">Paiements</a>
-                <a href="calendrier.html" class="tab">Disponibilité</a>
-            </nav>
             <section class="content">
                 <h2 style="color: white;">Tableau des créneaux</h2>
                 <p class="description" style="color: white;">Gérez les créneaux horaires disponibles pour votre terrain de football.</p>
                 <div class="slots-table">
+                    <div class="dashboard">
+                        <div class="dashboard-item">
+                            <h2>Nombre de créneaux occupés</h2>
+                            <p id="totalReservations">0</p>
+                        </div>
+                        <div class="dashboard-item">
+                            <h2>Nombre de créneaux disponibles</h2>
+                            <p id="totalAvailableSlots">0</p>
+                        </div>
+                        <div class="dashboard-item">
+                            <h2>Nombre de terrain disponible</h2>
+                            <p id="totalAvailableTerrains">0</p>
+                        </div>
+                        <div class="dashboard-item">
+                            <h2>Date actuelle</h2>
+                            <p id="currentDate">Chargement...</p>
+                        </div>
+                    </div>
                     <div class="search-container">
-                        <input type="date" id="searchDate" placeholder="Rechercher par date" onchange="filterTable()" aria-label="Search by date" />
-                        <button class="btn-add" onclick="openModal()">Ajouter un créneau</button>
+                        <div class="input-group">
+                            <label for="searchDate">Rechercher par date</label>
+                            <input type="date" id="searchDate" placeholder="Rechercher par date" />
+                        </div>
+                        <div class="input-group">
+                            <label for="types">Rechercher par type de terrain</label>
+                            <input type="text" id="types" placeholder="Rechercher par type de terrain" />
+                        </div>
+                        <div class="input-group">
+                            <label for="availableSlots">Voir créneau disponible</label>
+                            <input type="text" id="availableSlots" placeholder="Consulter le créneau dispo" />
+                        </div>
+                        <div class="input-group">
+                            <label for="occupiedSlots">Nombre de créneaux occupés</label>
+                            <input type="text" id="occupiedSlots" placeholder="Consulter les créneaux occupés" />
+                        </div>
+                        <div class="bouto">
+                            <button class="btn-add" onclick="openModal()">Ajouter un créneau</button>
+                            <button class="btn-add" onclick="openModal()">Consulter terrain disponible</button>
+                        </div>
                     </div>
                     <table id="creneaux-table">
                         <thead>
@@ -48,35 +96,40 @@
                                 <th>Heure Fin</th>
                                 <th>Type de Terrain</th>
                                 <th>Nom du Terrain</th>
+                                <th>Surface du terrain</th>
                                 <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="creneauxTableBody">
-                            <!-- Les créneaux seront injectés ici par JavaScript -->
-                        </tbody>
+                        <tbody id="creneauxTableBody"></tbody>
                     </table>
                 </div>
                 <div id="addCreneauModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
                     <div class="modal-content">
-                        <button class="close" onclick="closeModal()" aria-label="Close">&times;</button>
+                        <button class="close" onclick="closeModal()">&times;</button>
                         <h2 id="modalTitle">Veuillez ajouter un créneau :</h2>
                         <form id="addCreneauForm">
                             <label for="creneauDate">Date créneau</label>
-                            <input type="date" id="creneauDate" placeholder="Date" required />
+                            <input type="date" id="creneauDate" required />
                             <label for="creneauHeureDebut">Heure début</label>
-                            <input type="time" id="creneauHeureDebut" placeholder="Heure de début" required />
+                            <input type="time" id="creneauHeureDebut" required />
                             <label for="creneauHeureFin">Heure fin</label>
-                            <input type="time" id="creneauHeureFin" placeholder="Heure de fin" required />
+                            <input type="time" id="creneauHeureFin" required />
                             <label for="creneauTypeTerrain">Type de terrain</label>
-                            <select id="creneauTypeTerrain" name="creneauTypeTerrain" required>
+                            <select id="creneauTypeTerrain" required>
                                 <option value="normal">Normal</option>
                                 <option value="synthetique">Synthetique</option>
                             </select>
                             <label for="creneauNomTerrain">Nom du terrain</label>
-                            <input type="text" id="creneauNomTerrain" placeholder="Nom du terrain" required />
+                            <input type="text" id="creneauNomTerrain" required />
+                            <label for="creneauSurface">Surface du terrain</label>
+                            <select id="creneauSurface" required>
+                                <option value="7X7">7X7</option>
+                                <option value="9X9">9X9</option>
+                                <option value="11X11">11X11</option>
+                            </select>
                             <label for="creneauStatut">Statut</label>
-                            <select id="creneauStatut" name="creneauStatut" required>
+                            <select id="creneauStatut" required>
                                 <option value="disponible">Disponible</option>
                                 <option value="indisponible">Indisponible</option>
                             </select>
@@ -89,19 +142,37 @@
         </div>
     </main>
     <script>
-              function filterTable() {
-            const searchValue = document.getElementById("searchDate").value.toLowerCase();
-            const rows = document.querySelectorAll("#creneauxTableBody tr");
-            rows.forEach(row => {
-                const dateCell = row.cells[1].textContent.toLowerCase();
-                row.style.display = dateCell.includes(searchValue) ? "" : "none";
-            });
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
         }
 
-        // Fonction pour charger les créneaux depuis l'API
+        function displayCurrentDate() {
+            const currentDateElement = document.getElementById('currentDate');
+            const today = new Date();
+            currentDateElement.textContent = formatDate(today);
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('http://localhost:8000/stats');
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                const stats = await response.json();
+                document.getElementById('totalReservations').textContent = stats.occupiedSlots;
+                document.getElementById('totalAvailableSlots').textContent = stats.availableSlots;
+                document.getElementById('totalAvailableTerrains').textContent = stats.availableTerrains;
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
         async function loadCreneaux() {
             try {
-                const response = await fetch('http://3306:8000/creneaux');
+                const response = await fetch('http://localhost:8000/creneaux');
                 if (!response.ok) {
                     throw new Error('Erreur réseau');
                 }
@@ -110,7 +181,6 @@
                 tbody.innerHTML = '';
                 data.forEach(creneau => {
                     const row = document.createElement('tr');
-                    let statutClass = creneau.statut === 'disponible' ? 'statut-disponible' : 'statut-indisponible';
                     row.innerHTML = `
                         <td>${creneau.idcreneaux}</td>
                         <td>${creneau.datecreneaux}</td>
@@ -118,130 +188,66 @@
                         <td>${creneau.heurefin}</td>
                         <td>${creneau.typeTerrain}</td>
                         <td>${creneau.nomterrain}</td>
-                        <td class="${statutClass}">${creneau.statut}</td>
-                        <td class="actions">
-                            <button class="btn btn-edit" onclick="openEditModal(${creneau.idcreneaux})">Modifier</button>
-                            <button class="btn btn-delete" onclick="supprimerCreneau(${creneau.idcreneaux})">Supprimer</button>
-                        </td>
+                        <td>${creneau.SurfaceTerrains}</td>
+                        <td>${creneau.statut}</td>
+                        <td><button class="edit-btn">Modifier</button> <button class="delete-btn">Supprimer</button></td>
                     `;
                     tbody.appendChild(row);
                 });
             } catch (error) {
-                alert('Une erreur est survenue lors du chargement des créneaux. Veuillez réessayer.');
+                console.error('Erreur lors du chargement des créneaux:', error);
             }
         }
 
-        // Fonction pour ajouter un créneau
-        document.getElementById('addCreneauForm').addEventListener('submit', async function (event) {
+        async function addCreneau(event) {
             event.preventDefault();
-
-            const creneau = {
-                creneauDate: document.getElementById('creneauDate').value,
-                creneauHeureDebut: document.getElementById('creneauHeureDebut').value,
-                creneauHeureFin: document.getElementById('creneauHeureFin').value,
-                creneauTypeTerrain: document.getElementById('creneauTypeTerrain').value,
-                creneauNomTerrain: document.getElementById('creneauNomTerrain').value,
-                creneauStatut: document.getElementById('creneauStatut').value
+            const date = document.getElementById('creneauDate').value;
+            const heureDebut = document.getElementById('creneauHeureDebut').value;
+            const heureFin = document.getElementById('creneauHeureFin').value;
+            const typeTerrain = document.getElementById('creneauTypeTerrain').value;
+            const nomTerrain = document.getElementById('creneauNomTerrain').value;
+            const surface = document.getElementById('creneauSurface').value;
+            const statut = document.getElementById('creneauStatut').value;
+            const creneauData = {
+                date, heureDebut, heureFin, typeTerrain, nomTerrain, surface, statut
             };
-
             try {
-                const response = await fetch('http://3306:8000/ajoutcreneaux', {
+                const response = await fetch('http://localhost:8000/ajoutcreneaux', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(creneau)
+                    body: JSON.stringify(creneauData),
                 });
-
                 if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
+                    throw new Error('Erreur lors de l\'ajout du créneau');
                 }
-
-                alert('Créneau ajouté avec succès !');
+                loadCreneaux();
+                loadDashboardStats();
                 closeModal();
-                loadCreneaux();
+                alert('Créneau ajouté avec succès!');
             } catch (error) {
-                alert('Une erreur est survenue lors de l\'ajout du créneau.');
+                console.error('Erreur lors de l\'ajout du créneau:', error);
+                alert('Erreur lors de l\'ajout du créneau');
             }
-        });
+        }
 
-        // Fonction pour ouvrir le modal d'ajout
         function openModal() {
-            document.getElementById('addCreneauModal').style.display = 'flex';
+            const modal = document.getElementById('addCreneauModal');
+            modal.style.display = 'block';
         }
 
-        // Fonction pour fermer le modal
         function closeModal() {
-            document.getElementById('addCreneauModal').style.display = 'none';
+            const modal = document.getElementById('addCreneauModal');
+            modal.style.display = 'none';
         }
 
-    // Fonction pour ouvrir le modal de modification
-    async function openEditModal(idcreneau) {
-            try {
-                const response = await fetch(`http://localhost:8000/creneaux/${idcreneau}`);
-                if (!response.ok) {
-                    throw new Error('Erreur réseau');
-                }
-                const creneau = await response.json();
+        document.getElementById('addCreneauForm').addEventListener('submit', addCreneau);
 
-                const newDate = prompt("Nouvelle date (AAAA-MM-JJ):", creneau.datecreneaux);
-                const newHeureDebut = prompt("Nouvelle heure de début (HH:MM):", creneau.heure);
-                const newHeureFin = prompt("Nouvelle heure de fin (HH:MM):", creneau.heurefin);
-                const newTypeTerrain = prompt("Nouveau type de terrain (normal/synthetique):", creneau.typeTerrain);
-                const newNomTerrain = prompt("Nouveau nom du terrain:", creneau.nomterrain);
-                const newStatut = prompt("Nouveau statut (Disponible/Indisponible):", creneau.statut);
-
-                const updatedCreneau = {
-                    datecreneaux: newDate,
-                    heure: newHeureDebut,
-                    heurefin: newHeureFin,
-                    typeTerrain: newTypeTerrain,
-                    nomterrain: newNomTerrain,
-                    statut: newStatut
-                };
-
-                const updateResponse = await fetch(`http://localhost:8000/creneaux/${idcreneau}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedCreneau)
-                });
-
-                if (!updateResponse.ok) {
-                    throw new Error('Erreur lors de la modification');
-                }
-
-                alert('Créneau modifié avec succès !');
-                loadCreneaux();
-            } catch (error) {
-                alert('Erreur lors de la modification du créneau : ' + error.message);
-            }
-        }
-
-        // Charger les créneaux au démarrage
-        document.addEventListener('DOMContentLoaded', loadCreneaux);
-        // Fonction pour supprimer un créneau
-        async function supprimerCreneau(idcreneaux) {
-            try {
-                const response = await fetch(`http://localhost:8000/creneaux/${idcreneaux}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-
-                alert("Créneau supprimé avec succès !");
-                loadCreneaux();
-            } catch (error) {
-                alert(`Erreur lors de la suppression du créneau: ${error.message}`);
-            }
-        }
-
-        // Charger les créneaux au chargement de la page
         document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardStats();
             loadCreneaux();
+            displayCurrentDate();
         });
     </script>
 </body>
