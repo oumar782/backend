@@ -2,12 +2,15 @@
     "version": 2,
     "builds": [
       {
-        "src": "Server.js",
+        "src": "server.js",
         "use": "@vercel/node"
       }
     ],
-    "env": {
-      "DATABASE_URL": "postgresql://FootSolution_owner:npg_szc5rhVZKBx7@ep-snowy-rain-ab04oola-pooler.eu-west-2.aws.neon.tech/FootSolution?sslmode=require"
-    }
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "server.js"
+      }
+    ]
   }
   
